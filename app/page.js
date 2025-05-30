@@ -36,6 +36,13 @@ export default function Home() {
 		const res = await connect();
 		// Check if the connect completed
 		res && setConnected(true);
+		if (!res && isInstalled()) {
+			const connections = await getConnection();
+			if (connections.length > 0) {
+				setConnected(true);
+				setAddress(connections);
+			}
+		}
 	}
 
 	// Disconnect wallet from the website
@@ -93,29 +100,17 @@ export default function Home() {
 		}
   	}
 
-	function getConnectionWithTimeout(timeout = 3000) {
-		return Promise.race([
-			getConnection(),
-			new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))
-		]);
-	  }
-
 	// Piece of code that runs everytime the user's wallet changes or disconnected
 	useEffect(() => {
 		// Check if pwr wallet already installed
 		if (isInstalled()) {
-			console.log("isInstalled");
 			// Used to re-fetch the connected user's account every time
 			// the website is refreshed.
-			getConnectionWithTimeout().then(addressConnected => {
-				console.log("getConnection");
+			getConnection().then(addressConnected => {
 				if (addressConnected && address == null) {
-					console.log("Connected:", addressConnected);
-					setConnected(true);
-					setAddress(addressConnected);
+				  setConnected(true);
+				  setAddress(addressConnected);
 				}
-			}).catch(err => {
-				console.warn("Wallet connection timed out or failed:", err);
 			});
 
 			// Used to listen to any account changes that occur in the wallet.
