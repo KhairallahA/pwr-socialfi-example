@@ -95,14 +95,13 @@ export default function Home() {
 
 	// Piece of code that runs everytime the user's wallet changes or disconnected
 	useEffect(() => {
-		syncPosts(setPosts);
-
 		// Check if pwr wallet already installed
 		if (isInstalled()) {
 			// Used to re-fetch the connected user's account every time
 			// the website is refreshed.
 			getConnection().then(addressConnected => {
 				if (addressConnected && address == null) {
+					console.log("Connected:", addressConnected);
 					setConnected(true);
 					setAddress(addressConnected);
 				}
@@ -115,6 +114,8 @@ export default function Home() {
 				setConnected(addresses.length > 0);
 			});
 		}
+
+		syncPosts(setPosts);
 	}, [address]);
 
 	return (
