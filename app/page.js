@@ -97,9 +97,11 @@ export default function Home() {
 	useEffect(() => {
 		// Check if pwr wallet already installed
 		if (isInstalled()) {
+			console.log("isInstalled");
 			// Used to re-fetch the connected user's account every time
 			// the website is refreshed.
 			getConnection().then(addressConnected => {
+				console.log("getConnection");
 				if (addressConnected && address == null) {
 					console.log("Connected:", addressConnected);
 					setConnected(true);
