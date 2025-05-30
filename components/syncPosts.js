@@ -4,7 +4,7 @@ import PWRJS from "@pwrjs/core";
 // Sync posts and likes from the blockchain
 export async function syncPosts(setPosts) {
     const rpc = new PWRJS("https://pwrrpc.pwrlabs.io/");
-	const startingBlock = BigInt(await rpc.getLatestBlockNumber());
+    const startingBlock = BigInt(303000);
 
     // Handler function that processes incoming blockchain transactions
     // It parses transaction data and updates the posts state accordingly

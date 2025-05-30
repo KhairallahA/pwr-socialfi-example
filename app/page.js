@@ -5,9 +5,9 @@ import {
   getEvent, getConnection, isInstalled 
 } from "@pwrjs/browser-wallet";
 import { syncPosts } from "@/components/syncPosts";
+import { v4 as uuidv4 } from 'uuid';
 
 export const vidaId = 5544;
-const timestamp = new Date().getTime();
 
 // Format post timestamp
 const formatTimestamp = (t) => {
@@ -51,9 +51,9 @@ export default function Home() {
 		const data = {
 			type: "post",
 			post: content,
-			timestamp: timestamp,
+			timestamp: new Date().getTime(),
 			sender: address,
-			id: posts.length > 0 ? posts[posts.length - 1].id + 1 : 0,
+			id: uuidv4(),
 		};
 		// Convert data type to `Buffer`
 		const post = Buffer.from(JSON.stringify(data), 'utf8');
@@ -67,7 +67,7 @@ export default function Home() {
 		}
 	}
 
-	// Send `like` data using PWR SDK and PWR Walletb
+	// Send `like` data using PWR SDK and PWR Wallet
 	const sendLike = async (postId) => {
 		try {
 			for (let i=0; i <= posts.length; i++) {
@@ -77,7 +77,7 @@ export default function Home() {
 						type: "like",
 						likes: posts[i]?.likes + 1,
 						postId: postId,
-						timestamp: timestamp,
+						timestamp: new Date().getTime(),
 						sender: address,
 					};
 					// Convert data type to `Buffer`
@@ -95,6 +95,8 @@ export default function Home() {
 
 	// Piece of code that runs everytime the user's wallet changes or disconnected
 	useEffect(() => {
+		syncPosts(setPosts);
+
 		// Check if pwr wallet already installed
 		if (isInstalled()) {
 			// Used to re-fetch the connected user's account every time
@@ -112,11 +114,8 @@ export default function Home() {
 				console.log("Account changed to: ", addresses[0]);
 				setConnected(addresses.length > 0);
 			});
-
-			// Fetch the posts from `syncPosts` to our state variable `posts`
-			syncPosts(setPosts);
 		}
-	}, [posts, address]);
+	}, [address]);
 
 	return (
 		<div>
@@ -170,23 +169,25 @@ export default function Home() {
 				</div>
 
 				<div className="flex flex-col bg-[#0c1012] p-5 mt-6">
-				{posts.map(post => (
-					<div className="flex flex-col" key={post?.id}>
-						<p className="pl-2 font-semibold">
-							{post?.sender.slice(0, 5)}...{post?.sender.slice(-3)} - {formatTimestamp(post?.timestamp)}
-						</p>
+				{[...posts]
+					.sort((a, b) => b.timestamp - a.timestamp)
+					.map(post => (
+						<div className="flex flex-col" key={post?.id}>
+							<p className="pl-2 font-semibold">
+								{post?.sender.slice(0, 5)}...{post?.sender.slice(-3)} - {formatTimestamp(post?.timestamp)}
+							</p>
 
-						<div className="pt-1 pb-1 pl-4">
-							{post?.post}
+							<div className="pt-1 pb-1 pl-4">
+								{post?.post}
+							</div>
+
+							<p onClick={() => sendLike(post?.id)} className="text-red-500 pb-2 pl-4 cursor-pointer">
+								{post?.likes} Likes
+							</p>
+
+							<hr className="mb-4"/>
 						</div>
-
-						<p onClick={() => sendLike(post?.id)} className="text-red-500 pb-2 pl-4 cursor-pointer">
-							{post?.likes} Likes
-						</p>
-
-						<hr className="mb-4"/>
-					</div>
-				))}
+					))}
 				</div>
 			</div>
 		</div>
