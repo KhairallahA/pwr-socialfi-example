@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@pwrjs/browser-wallet": "^0.1.0",
-    "@pwrjs/core": "^0.11.5",
+    "@pwrjs/browser-wallet": "^0.1.1",
+    "@pwrjs/core": "^0.12.8",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
